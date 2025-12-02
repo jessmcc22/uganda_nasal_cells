@@ -472,6 +472,9 @@ str(coldata)
 
 
 # gene length 
+
+# need to download GTF annotation file from https://www.gencodegenes.org/human/release_44.html)
+# GTF file is comprehensive gene annotation on the primary assembly (chromosomes and scaffolds) sequence regions (Release 44 -GRCh38.p14)
 txdb <- makeTxDbFromGFF("gencode.v44.primary_assembly.annotation.gtf", format="gtf")
 exons.list.per.gene <- exonsBy(txdb,by="gene")
 head(exons.list.per.gene )
