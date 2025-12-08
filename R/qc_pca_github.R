@@ -19,7 +19,7 @@ library(ggpubr)
 
 
 #### Preparing nasal data  ####
-coldata<- read.csv("data/full_metadata.csv", header = TRUE, row.names = 4, sep = ",")
+coldata <- read.csv("data/full_metadata.csv", header = TRUE, row.names = 4, sep = ",")
 coldata <- coldata[,-1]
 coldata <- coldata[coldata$type == "nasal",]
 row.names(coldata)
@@ -58,7 +58,7 @@ colnames(counts_data)
 
 
 # Filter for genes with a median >= 0
-counts_data = subset(counts_data,apply(counts_data, 1, mean) >= 1)
+counts_data <- subset(counts_data,apply(counts_data, 1, mean) >= 1)
 
 
 str(coldata) #status and sex are character
@@ -70,7 +70,7 @@ coldata <- coldata %>%
 
 
 # Add gene names to your counts data
-genes <-read.delim("data/genes_annotation_final.txt", header = TRUE, sep = "\t", dec=".")
+genes <- read.delim("data/genes_annotation_final.txt", header = TRUE, sep = "\t", dec=".")
 genes[(duplicated(genes$ensembl_gene_id_version) == TRUE),]
 all(rownames(counts_data) %in% genes$ensembl_gene_id_version)
 genes <- genes[genes$ensembl_gene_id_version %in% rownames(counts_data) ,]
@@ -86,9 +86,9 @@ non_duplicates_idx <- which(duplicated(test$external_gene_name) == FALSE)
 test <- test[non_duplicates_idx, ]
 duplicate_names<- test[duplicated(test$external_gene_name),] # 0
 duplicate_names$external_gene_name
-row.names(test) = test[,"external_gene_name"]
+row.names(test) <- test[,"external_gene_name"]
 
-missing_names<- test[test$external_gene_name == "", ] # 1
+missing_names <- test[test$external_gene_name == "", ] # 1
 missing_names2 <- test[is.na(test$external_gene_name),] #-
 non_empty_idx <- which(test$external_gene_name != "")
 test <- test[non_empty_idx,]
@@ -96,7 +96,7 @@ counts_data <- test
 counts_data <- counts_data[,-36]
 
 # Convert to matrix
-counts_data = as.matrix(counts_data)
+counts_data <- as.matrix(counts_data)
 
 all(rownames(coldata) %in% colnames(counts_data))
 all(rownames(coldata) == colnames(counts_data))
@@ -177,7 +177,7 @@ euclid_ht_no
 
 #### Preparing blood data  ####
 
-coldata<- read.csv("data/full_metadata.csv", header = TRUE, row.names = 4, sep = ",")
+coldata <- read.csv("data/full_metadata.csv", header = TRUE, row.names = 4, sep = ",")
 coldata <- coldata[,-1]
 coldata <- coldata[coldata$type == "blood",] #subset blood only
 row.names(coldata)
@@ -206,17 +206,17 @@ counts_data <- merge(counts_data, genes[1:2], by.x = "row.names", by.y= "ensembl
 row.names(counts_data) <- counts_data$Row.names
 counts_data <- counts_data[, -1]
 
-counts_data<- counts_data[!grepl("HB", counts_data$external_gene_name),]
-counts_data<- counts_data[!grepl("^MT", counts_data$external_gene_name),]
-counts_data<- counts_data[!grepl("RPL", counts_data$external_gene_name),]
-counts_data<- counts_data[!grepl("RPS", counts_data$external_gene_name),]
-counts_data<- counts_data[!grepl("RNA", counts_data$external_gene_name),]
+counts_data <- counts_data[!grepl("HB", counts_data$external_gene_name),]
+counts_data <- counts_data[!grepl("^MT", counts_data$external_gene_name),]
+counts_data <- counts_data[!grepl("RPL", counts_data$external_gene_name),]
+counts_data <- counts_data[!grepl("RPS", counts_data$external_gene_name),]
+counts_data <- counts_data[!grepl("RNA", counts_data$external_gene_name),]
 counts_data <-  counts_data[,-41]
 colnames(counts_data)
 
 
 # Filter for genes with a median >= 0
-counts_data = subset(counts_data,apply(counts_data, 1, mean) >= 1)
+counts_data <- subset(counts_data,apply(counts_data, 1, mean) >= 1)
 # 15946
 
 str(coldata)
@@ -244,9 +244,9 @@ non_duplicates_idx <- which(duplicated(test$external_gene_name) == FALSE)
 test <- test[non_duplicates_idx, ]
 duplicate_names<- test[duplicated(test$external_gene_name),] # 0
 duplicate_names$external_gene_name
-row.names(test) = test[,"external_gene_name"]
+row.names(test) <- test[,"external_gene_name"]
 
-missing_names<- test[test$external_gene_name == "", ] # 1
+missing_names <- test[test$external_gene_name == "", ] # 1
 missing_names2 <- test[is.na(test$external_gene_name),] #-
 non_empty_idx <- which(test$external_gene_name != "")
 test <- test[non_empty_idx,]
@@ -254,7 +254,7 @@ counts_data <- test
 counts_data <- counts_data[,-41]
 
 # Convert to matrix
-counts_data = as.matrix(counts_data)
+counts_data <- as.matrix(counts_data)
 
 all(rownames(coldata) %in% colnames(counts_data))
 all(rownames(coldata) == colnames(counts_data))
@@ -372,7 +372,7 @@ pca<-prcomp(mat)
 
 
 #### biological variables ####
-pc1_pc2_noeclip = function(colour_groups, e_data)
+pc1_pc2_noeclip <- function(colour_groups, e_data)
 {
   ntop <- 500
   rv <- rowVars(assay(e_data))
@@ -387,7 +387,7 @@ pc1_pc2_noeclip = function(colour_groups, e_data)
   x_axis_label = paste("PC1 (", prop_x, "%)", sep = "")
   y_axis_label = paste("PC2 (", prop_y, "%)", sep = "")
 
-  ggp = ggplot(pca_coordinates, aes(x=PC1, y=PC2, colour = colour_groups)) +
+  ggp <- ggplot(pca_coordinates, aes(x=PC1, y=PC2, colour = colour_groups)) +
     geom_point() +
     labs(title = "", x = x_axis_label , y= y_axis_label, colour = NULL) +
     theme_classic() +
@@ -403,7 +403,7 @@ pc1_pc2_noeclip = function(colour_groups, e_data)
 
 
 #### PCA function PCA3/4 ####
-pc3_pc4_noeclip = function(colour_groups, e_data)
+pc3_pc4_noeclip <- function(colour_groups, e_data)
 {
   ntop <- 500
   rv <- rowVars(assay(e_data))
@@ -412,13 +412,13 @@ pc3_pc4_noeclip = function(colour_groups, e_data)
   pca<-prcomp(mat)
   pca_coordinates <-  as.data.frame(pca$x)
 
-  vars = apply(pca$x, 2, var)
-  prop_x = round(vars["PC3"] / sum(vars) * 100, 0)
-  prop_y = round(vars["PC4"] / sum(vars) * 100, 0)
-  x_axis_label = paste("PC3 (", prop_x, "%)", sep = "")
-  y_axis_label = paste("PC4 (", prop_y, "%)", sep = "")
+  vars <- apply(pca$x, 2, var)
+  prop_x <- round(vars["PC3"] / sum(vars) * 100, 0)
+  prop_y <- round(vars["PC4"] / sum(vars) * 100, 0)
+  x_axis_label <- paste("PC3 (", prop_x, "%)", sep = "")
+  y_axis_label <- paste("PC4 (", prop_y, "%)", sep = "")
 
-  ggp = ggplot(pca_coordinates, aes(x=PC3, y=PC4, colour = colour_groups)) +
+  ggp <- ggplot(pca_coordinates, aes(x=PC3, y=PC4, colour = colour_groups)) +
     geom_point() +
     labs(title = "", x = x_axis_label , y= y_axis_label, colour = NULL) +
     theme_classic() +
@@ -446,7 +446,7 @@ n_pca_stage1_2 <- pc1_pc2_noeclip(coldata$HIV_stage, vsd)
 n_pca_stage3_4 <- pc3_pc4_noeclip(coldata$HIV_stage, vsd)
 
 
-make_pc1_pc2_cont = function(colour_groups, e_data)
+make_pc1_pc2_cont <- function(colour_groups, e_data)
 {
   ntop <- 500
   rv <- rowVars(assay(e_data))
@@ -455,13 +455,13 @@ make_pc1_pc2_cont = function(colour_groups, e_data)
   pca<-prcomp(mat)
   pca_coordinates <-  as.data.frame(pca$x)
 
-  vars = apply(pca$x, 2, var)
-  prop_x = round(vars["PC1"] / sum(vars) * 100, 0)
-  prop_y = round(vars["PC2"] / sum(vars) * 100, 0)
-  x_axis_label = paste("PC1 (", prop_x, "%)", sep = "")
-  y_axis_label = paste("PC2 (", prop_y, "%)", sep = "")
+  vars <- apply(pca$x, 2, var)
+  prop_x <- round(vars["PC1"] / sum(vars) * 100, 0)
+  prop_y <- round(vars["PC2"] / sum(vars) * 100, 0)
+  x_axis_label <- paste("PC1 (", prop_x, "%)", sep = "")
+  y_axis_label <- paste("PC2 (", prop_y, "%)", sep = "")
 
-  ggp = ggplot(pca_coordinates, aes(x=PC1, y=PC2, colour = colour_groups)) +
+  ggp <- ggplot(pca_coordinates, aes(x=PC1, y=PC2, colour = colour_groups)) +
     geom_point(size = 2) +
     scale_colour_gradientn(
       colours = c("#1b7837", "#92c5de", "#762a83")
@@ -478,7 +478,7 @@ make_pc1_pc2_cont = function(colour_groups, e_data)
   return(ggp)
 }
 
-make_pc3_pc4_cont = function(colour_groups, e_data)
+make_pc3_pc4_cont <- function(colour_groups, e_data)
 {
   ntop <- 500
   rv <- rowVars(assay(e_data))
@@ -487,13 +487,13 @@ make_pc3_pc4_cont = function(colour_groups, e_data)
   pca<-prcomp(mat)
   pca_coordinates <-  as.data.frame(pca$x)
 
-  vars = apply(pca$x, 2, var)
-  prop_x = round(vars["PC3"] / sum(vars) * 100, 0)
-  prop_y = round(vars["PC4"] / sum(vars) * 100, 0)
-  x_axis_label = paste("PC3 (", prop_x, "%)", sep = "")
-  y_axis_label = paste("PC4 (", prop_y, "%)", sep = "")
+  vars <- apply(pca$x, 2, var)
+  prop_x <- round(vars["PC3"] / sum(vars) * 100, 0)
+  prop_y <- round(vars["PC4"] / sum(vars) * 100, 0)
+  x_axis_label <- paste("PC3 (", prop_x, "%)", sep = "")
+  y_axis_label <- paste("PC4 (", prop_y, "%)", sep = "")
 
-  ggp = ggplot(pca_coordinates, aes(x=PC3, y=PC4, colour = colour_groups)) +
+  ggp <- ggplot(pca_coordinates, aes(x=PC3, y=PC4, colour = colour_groups)) +
     geom_point(size = 2) +
     scale_colour_gradientn(
       colours = c("#1b7837", "#92c5de", "#762a83")
@@ -534,8 +534,8 @@ pc_scores <- pc_scores %>%
   relocate(c(status, sex), .after = sample)
 pc_scores
 
-pc_scores_control = pc_scores[pc_scores$status == "control",]
-pc_scores_case = pc_scores[pc_scores$status == "case",]
+pc_scores_control <- pc_scores[pc_scores$status == "control",]
+pc_scores_case <- pc_scores[pc_scores$status == "case",]
 
 run_pca_tests2 <- function(pc_scores, group_var) {
   pc_scores[[group_var]] <- as.factor(pc_scores[[group_var]])
@@ -584,7 +584,7 @@ print(p_values_table)
 #### PCA for panelled figs ####
 
 #### TB status ####
-make_pc3_pc4 = function(colour_groups, e_data)
+make_pc3_pc4 <- function(colour_groups, e_data)
 {
   ntop <- 500
   rv <- rowVars(assay(e_data))
@@ -592,13 +592,13 @@ make_pc3_pc4 = function(colour_groups, e_data)
   mat <- t( assay(e_data)[select, ] )
   pca<-prcomp(mat)
   pca_coordinates <-  as.data.frame(pca$x)
-  vars = apply(pca$x, 2, var)
-  prop_x = round(vars["PC3"] / sum(vars) * 100, 0)
-  prop_y = round(vars["PC4"] / sum(vars) * 100, 0)
-  x_axis_label = paste("PC3 (", prop_x, "%)", sep = "")
-  y_axis_label = paste("PC4 (", prop_y, "%)", sep = "")
+  vars <- apply(pca$x, 2, var)
+  prop_x <- round(vars["PC3"] / sum(vars) * 100, 0)
+  prop_y <- round(vars["PC4"] / sum(vars) * 100, 0)
+  x_axis_label <- paste("PC3 (", prop_x, "%)", sep = "")
+  y_axis_label <- paste("PC4 (", prop_y, "%)", sep = "")
 
-  ggp = ggplot(pca_coordinates, aes(x=PC3, y=PC4, colour = colour_groups)) +
+  ggp <- ggplot(pca_coordinates, aes(x=PC3, y=PC4, colour = colour_groups)) +
     geom_point() +
     labs(title = "Nasal", x = x_axis_label , y= y_axis_label, colour = NULL ) +
     stat_ellipse() +
@@ -616,7 +616,7 @@ n_bp_pc4 <- ggboxplot(pc_scores,x="status",y="PC4", color="status",
                       order=c("case","control"),
                       add="jitter",xlab=F,outlier.shape=NA)
 
-n_bp_pc4<-n_bp_pc4+stat_compare_means(method = "t.test") +
+n_bp_pc4 <-n_bp_pc4+stat_compare_means(method = "t.test") +
   theme(legend.position = "none", text = element_text(size =12))
 
 n_bp_pc4
@@ -694,8 +694,8 @@ pc_scores <- pc_scores %>%
   relocate(c(status, sex), .after = sample)
 pc_scores
 
-pc_scores_control = pc_scores[pc_scores$status == "control",]
-pc_scores_case = pc_scores[pc_scores$status == "case",]
+pc_scores_control <- pc_scores[pc_scores$status == "control",]
+pc_scores_case <- pc_scores[pc_scores$status == "case",]
 
 # Run the tests for TB status (main factor of interest) and sex (strong relationship on P3 and P4)
 pca_tb_results <- run_pca_tests2(pc_scores, "status")
@@ -718,7 +718,7 @@ print(p_values_table)
 
 #### PCA for panelled figs - blood ####
 
-make_pc1_pc2 = function(colour_groups, e_data)
+make_pc1_pc2 <- function(colour_groups, e_data)
 {
   ntop <- 500
   rv <- rowVars(assay(e_data))
@@ -727,13 +727,13 @@ make_pc1_pc2 = function(colour_groups, e_data)
   pca<-prcomp(mat)
   pca_coordinates <-  as.data.frame(pca$x)
 
-  vars = apply(pca$x, 2, var)
-  prop_x = round(vars["PC1"] / sum(vars) * 100, 0)
-  prop_y = round(vars["PC2"] / sum(vars) * 100, 0)
-  x_axis_label = paste("PC1 (", prop_x, "%)", sep = "")
-  y_axis_label = paste("PC2 (", prop_y, "%)", sep = "")
+  vars <- apply(pca$x, 2, var)
+  prop_x <- round(vars["PC1"] / sum(vars) * 100, 0)
+  prop_y <- round(vars["PC2"] / sum(vars) * 100, 0)
+  x_axis_label <- paste("PC1 (", prop_x, "%)", sep = "")
+  y_axis_label <- paste("PC2 (", prop_y, "%)", sep = "")
 
-  ggp = ggplot(pca_coordinates, aes(x=PC1, y=PC2, colour = colour_groups)) +
+  ggp <- ggplot(pca_coordinates, aes(x=PC1, y=PC2, colour = colour_groups)) +
     geom_point() +
     labs(title = "Blood", x = x_axis_label , y= y_axis_label, colour = NULL) +
     stat_ellipse() +
@@ -809,10 +809,10 @@ clinical <- cowplot::plot_grid(
 title_row <- ggdraw() + draw_label("PCA for nasal variables", size = 20, x = 0.5, hjust = 0.5)
 
 
-sub1 <- ggdraw() + draw_label("Sex",                fontface = "plain", size = 14, x = 0.5, hjust = 0.5)
-sub2 <- ggdraw() + draw_label("HIV stage",                fontface = "plain", size = 14, x = 0.5, hjust = 0.5)
-sub3 <- ggdraw() + draw_label("CD4 count",                fontface = "plain", size = 14, x = 0.5, hjust = 0.5)
-sub4 <- ggdraw() + draw_label("Age",         fontface = "plain", size = 14, x = 0.5, hjust = 0.5)
+sub1 <- ggdraw() + draw_label("Sex", fontface = "plain", size = 14, x = 0.5, hjust = 0.5)
+sub2 <- ggdraw() + draw_label("HIV stage", fontface = "plain", size = 14, x = 0.5, hjust = 0.5)
+sub3 <- ggdraw() + draw_label("CD4 count", fontface = "plain", size = 14, x = 0.5, hjust = 0.5)
+sub4 <- ggdraw() + draw_label("Age", fontface = "plain", size = 14, x = 0.5, hjust = 0.5)
 
 
 subtitle_row <- cowplot::plot_grid(sub1, sub2, sub3, sub4, ncol = 4)
@@ -855,10 +855,10 @@ clinical <- cowplot::plot_grid(
 title_row <- ggdraw() + draw_label("PCA for blood variables", size = 20, x = 0.5, hjust = 0.5)
 
 
-sub1 <- ggdraw() + draw_label("Sex",                fontface = "plain", size = 14, x = 0.5, hjust = 0.5)
-sub2 <- ggdraw() + draw_label("HIV stage",                fontface = "plain", size = 14, x = 0.5, hjust = 0.5)
-sub3 <- ggdraw() + draw_label("CD4 count",                fontface = "plain", size = 14, x = 0.5, hjust = 0.5)
-sub4 <- ggdraw() + draw_label("Age",         fontface = "plain", size = 14, x = 0.5, hjust = 0.5)
+sub1 <- ggdraw() + draw_label("Sex", fontface = "plain", size = 14, x = 0.5, hjust = 0.5)
+sub2 <- ggdraw() + draw_label("HIV stage", fontface = "plain", size = 14, x = 0.5, hjust = 0.5)
+sub3 <- ggdraw() + draw_label("CD4 count", fontface = "plain", size = 14, x = 0.5, hjust = 0.5)
+sub4 <- ggdraw() + draw_label("Age", fontface = "plain", size = 14, x = 0.5, hjust = 0.5)
 
 
 
@@ -881,10 +881,10 @@ dev.off()
 coldata
 counts_data
 str(coldata)
-batch = factor(coldata$sex)
-sample_group = factor(coldata$status)
+batch <- factor(coldata$sex)
+sample_group <- factor(coldata$status)
 str(coldata)
-counts_corrected = ComBat_seq(as.matrix(counts_data), batch=batch, group=sample_group)
+counts_corrected <- ComBat_seq(as.matrix(counts_data), batch=batch, group=sample_group)
 
 
 dds <- DESeqDataSetFromMatrix(countData = counts_corrected,
@@ -916,8 +916,8 @@ pc_scores <- pc_scores %>%
 pc_scores <- pc_scores %>%
   relocate(c(status, sex), .after = sample)
 pc_scores
-pc_scores_control = pc_scores[pc_scores$status == "control",]
-pc_scores_case = pc_scores[pc_scores$status == "case",]
+pc_scores_control <- pc_scores[pc_scores$status == "control",]
+pc_scores_case <- pc_scores[pc_scores$status == "case",]
 pca_tb_results <- run_pca_tests2(pc_scores, "status")
 pca_tb_results
 pca_sex_results <- run_pca_tests2(pc_scores, "sex")
@@ -951,10 +951,10 @@ n_bp_pc3_corr
 coldata_blood
 counts_data_blood
 str(coldata_blood)
-batch = factor(coldata_blood$sex)
-sample_group = factor(coldata_blood$status)
+batch <- factor(coldata_blood$sex)
+sample_group <- factor(coldata_blood$status)
 str(coldata_blood)
-counts_corrected_blood = ComBat_seq(as.matrix(counts_data_blood), batch=batch, group=sample_group)
+counts_corrected_blood <- ComBat_seq(as.matrix(counts_data_blood), batch=batch, group=sample_group)
 dds <- DESeqDataSetFromMatrix(countData = counts_corrected_blood,
                               colData = coldata_blood,
                               design = ~ status)
@@ -986,8 +986,8 @@ pc_scores <- pc_scores %>%
   relocate(c(status, sex), .after = sample)
 pc_scores
 
-pc_scores_control = pc_scores[pc_scores$status == "control",]
-pc_scores_case = pc_scores[pc_scores$status == "case",]
+pc_scores_control <- pc_scores[pc_scores$status == "control",]
+pc_scores_case <- pc_scores[pc_scores$status == "case",]
 pca_tb_results <- run_pca_tests2(pc_scores, "status")
 pca_tb_results
 pca_sex_results <- run_pca_tests2(pc_scores, "sex")
@@ -1011,8 +1011,9 @@ b_bp_pc1_corr <- ggboxplot(pc_scores,x="status",y="PC1", color="status",
                            order=c("case","control"),
                            add="jitter",xlab=F,outlier.shape=NA)
 
-b_bp_pc1_corr<-b_bp_pc1_corr+stat_compare_means(method = "t.test", label.y = max(pc_scores$PC1) + 2.5) +
-  theme(legend.position = "none", text = element_text(size =12))
+b_bp_pc1_corr <- b_bp_pc1_corr + stat_compare_means(method = "t.test",
+    label.y = max(pc_scores$PC1) + 2.5) +
+    theme(legend.position = "none", text = element_text(size =12))
 
 
 #### PANELLED FIGURE ####

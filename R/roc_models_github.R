@@ -48,15 +48,15 @@ coldata <- coldata %>%
 str(coldata)
 
 # Convert to matrix
-counts_data = as.matrix(counts_data)
+counts_data <- as.matrix(counts_data)
 all(rownames(coldata) %in% colnames(counts_data))
 all(rownames(coldata) == colnames(counts_data))
 all(colnames(counts_data) %in% rownames(coldata))
 all(colnames(counts_data) == rownames(coldata))
 
-batch = factor(coldata$sex)
-sample_group = factor(coldata$status)
-counts_corrected = ComBat_seq(as.matrix(counts_data), batch=batch, group=sample_group)
+batch <- factor(coldata$sex)
+sample_group <- factor(coldata$status)
+counts_corrected <- ComBat_seq(as.matrix(counts_data), batch=batch, group=sample_group)
 
 
 # DESeq2
@@ -114,7 +114,7 @@ r_fit <- caret::train(status~., data=feats,
 
 
 fm_model_r <- evalm(r_fit, gnames='random forest', plots="r", fsize=11)
-ggr = fm_model_r$roc + theme_SL2() + theme(legend.position = "bottom")
+ggr <- fm_model_r$roc + theme_SL2() + theme(legend.position = "bottom")
 dev.off()
 fm_model_r
 
@@ -150,7 +150,7 @@ svmr_fit <- train(
 
 
 fm_model_svmr <- evalm(svmr_fit, gnames='SVM (radial)', plots="r", fsize=11)
-ggsvmr = fm_model_svmr$roc + theme_SL2() + theme(legend.position = "bottom")
+ggsvmr <- fm_model_svmr$roc + theme_SL2() + theme(legend.position = "bottom")
 dev.off()
 fm_model_svmr
 
@@ -167,7 +167,7 @@ svm_fit <- train(
 
 
 fm_model_svm <- evalm(svm_fit, gnames='SVM (linear)', plots="r", fsize=11)
-ggsvm = fm_model_svm$roc + theme_SL2() + theme(legend.position = "bottom")
+ggsvm <- fm_model_svm$roc + theme_SL2() + theme(legend.position = "bottom")
 dev.off()
 fm_model_svm
 
@@ -184,7 +184,7 @@ knn_fit <- train(
 
 
 fm_model_knn <- evalm(knn_fit, gnames='kNN', plots="r", fsize=11)
-ggk = fm_model_knn$roc + theme_SL2() + theme(legend.position = "bottom")
+ggk <- fm_model_knn$roc + theme_SL2() + theme(legend.position = "bottom")
 dev.off()
 fm_model_knn
 
@@ -199,7 +199,7 @@ pls_fit <- train(
 
 
 fm_model_pls <- evalm(pls_fit, gnames='PLS', plots="r", fsize=11)
-ggp = fm_model_pls$roc + theme_SL2() + theme(legend.position = "bottom")
+ggp <- fm_model_pls$roc + theme_SL2() + theme(legend.position = "bottom")
 dev.off()
 fm_model_pls
 
@@ -316,7 +316,7 @@ overlapping_genes_ml
 
 #### Train nasal models based on variable importance predictive genes ####
 
-genes = c("SPIB", "SHISA2", "TESPA1", "CD1B")
+genes <- c("SPIB", "SHISA2", "TESPA1", "CD1B")
 
 dim(vst_mat)
 head(vst_mat[, 1:5])
@@ -363,7 +363,7 @@ r_fit <- caret::train(status~., data=feats,
                       importance = 'permutation')
 
 fm_model_r <- evalm(r_fit, gnames='random forest', plots="r", fsize=11)
-ggr = fm_model_r$roc + theme_SL2() + theme(legend.position = "bottom")
+ggr <- fm_model_r$roc + theme_SL2() + theme(legend.position = "bottom")
 dev.off()
 fm_model_r
 
@@ -380,7 +380,7 @@ glmnet_fit <- train(
 )
 
 fm_model_e <- evalm(glmnet_fit, gnames='elastic net', plots="r", fsize=11)
-gge = fm_model_e$roc + theme_SL2() + theme(legend.position = "bottom")
+gge <- fm_model_e$roc + theme_SL2() + theme(legend.position = "bottom")
 dev.off()
 fm_model_e
 
@@ -397,7 +397,7 @@ svmr_fit <- train(
 )
 
 fm_model_svmr <- evalm(svmr_fit, gnames='SVM (radial)', plots="r", fsize=11)
-ggsvmr = fm_model_svmr$roc + theme_SL2() + theme(legend.position = "bottom")
+ggsvmr <- fm_model_svmr$roc + theme_SL2() + theme(legend.position = "bottom")
 dev.off()
 fm_model_svmr
 
@@ -408,14 +408,14 @@ svm_fit <- train(
   method = "svmLinear",
   metric = "ROC",
   trControl = fit_control,
-  tuneLength=15,
+  tuneLength = 15,
   preProcess = c("center","scale")
 )
 
 
 
 fm_model_svm <- evalm(svm_fit, gnames='SVM (linear)', plots="r", fsize=11)
-ggsvm = fm_model_svm$roc + theme_SL2() + theme(legend.position = "bottom")
+ggsvm <- fm_model_svm$roc + theme_SL2() + theme(legend.position = "bottom")
 dev.off()
 fm_model_svm
 
@@ -427,12 +427,12 @@ knn_fit <- train(
   method = "knn",
   metric = "ROC",
   trControl = fit_control,
-  tuneLength=15,
+  tuneLength = 15,
   preProcess = c("center","scale"))
 
 
 fm_model_knn <- evalm(knn_fit, gnames='kNN', plots="r", fsize=11)
-ggk = fm_model_knn$roc + theme_SL2() + theme(legend.position = "bottom")
+ggk <- fm_model_knn$roc + theme_SL2() + theme(legend.position = "bottom")
 dev.off()
 fm_model_knn
 
@@ -448,7 +448,7 @@ pls_fit <- train(
 
 
 fm_model_pls <- evalm(pls_fit, gnames='PLS', plots="r", fsize=11)
-ggp = fm_model_pls$roc + theme_SL2() + theme(legend.position = "bottom")
+ggp <- fm_model_pls$roc + theme_SL2() + theme(legend.position = "bottom")
 dev.off()
 fm_model_pls
 
@@ -487,16 +487,16 @@ coldata_blood <- coldata_blood %>%
   )
 str(coldata_blood)
 
-counts_data_blood = as.matrix(counts_data_blood)
+counts_data_blood <- as.matrix(counts_data_blood)
 all(rownames(coldata_blood) %in% colnames(counts_data_blood))
 all(rownames(coldata_blood) == colnames(counts_data_blood))
 all(colnames(counts_data_blood) %in% rownames(coldata_blood))
 all(colnames(counts_data_blood) == rownames(coldata_blood))
 
 
-batch = factor(coldata_blood$sex)
-sample_group = factor(coldata_blood$status)
-counts_corrected_blood = ComBat_seq(as.matrix(counts_data_blood), batch=batch, group=sample_group)
+batch <- factor(coldata_blood$sex)
+sample_group <- factor(coldata_blood$status)
+counts_corrected_blood <- ComBat_seq(as.matrix(counts_data_blood), batch=batch, group=sample_group)
 dds <- DESeqDataSetFromMatrix(countData = counts_corrected_blood,
                               colData = coldata_blood,
                               design = ~ status)
@@ -586,7 +586,7 @@ svmr_fit <- train(
 
 
 fm_model_svmr <- evalm(svmr_fit, gnames='SVM (radial)', plots="r", fsize=11)
-ggsvmr = fm_model_svmr$roc + theme_SL2() + theme(legend.position = "bottom")
+ggsvmr <- fm_model_svmr$roc + theme_SL2() + theme(legend.position = "bottom")
 dev.off()
 fm_model_svmr
 
@@ -619,7 +619,7 @@ knn_fit <- train(
 
 
 fm_model_knn <- evalm(knn_fit, gnames='kNN', plots="r", fsize=11)
-ggk = fm_model_knn$roc + theme_SL2() + theme(legend.position = "bottom")
+ggk <- fm_model_knn$roc + theme_SL2() + theme(legend.position = "bottom")
 dev.off()
 fm_model_knn
 
@@ -637,7 +637,7 @@ pls_fit <- train(
 
 
 fm_model_pls <- evalm(pls_fit, gnames='PLS', plots="r", fsize=11)
-ggp = fm_model_pls$roc + theme_SL2() + theme(legend.position = "bottom")
+ggp <- fm_model_pls$roc + theme_SL2() + theme(legend.position = "bottom")
 
 dev.off()
 fm_model_pls

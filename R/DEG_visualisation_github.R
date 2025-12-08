@@ -32,7 +32,7 @@ coldata <- coldata %>%
   )
 str(coldata)
 
-counts_data = as.matrix(counts_data)
+counts_data <- as.matrix(counts_data)
 all(rownames(coldata) %in% colnames(counts_data))
 all(rownames(coldata) == colnames(counts_data))
 all(colnames(counts_data) %in% rownames(coldata))
@@ -40,9 +40,9 @@ all(colnames(counts_data) == rownames(coldata))
 
 
 #sex correction
-batch = factor(coldata$sex)
-sample_group = factor(coldata$status)
-counts_corrected = ComBat_seq(as.matrix(counts_data), batch=batch, group=sample_group)
+batch <- factor(coldata$sex)
+sample_group <- factor(coldata$status)
+counts_corrected <- ComBat_seq(as.matrix(counts_data), batch=batch, group=sample_group)
 
 
 #### DESeq2  ####
@@ -65,26 +65,26 @@ table_counts_normalized <- counts(dds, normalized=TRUE)
 
 #### Parse files ####
 # normalised gene expression table
-em = read.csv("data/em_nasal.csv", header=TRUE, row.names = 1)
+em <- read.csv("data/em_nasal.csv", header=TRUE, row.names = 1)
 
 # differential expression table
-de = read.csv("data/de_nasal.csv", header=TRUE, row.names = 1)
+de <- read.csv("data/de_nasal.csv", header=TRUE, row.names = 1)
 res_nasal <- de
 de <- de[,-c(1,3,4)]
 colnames(de) <- c("log2fold", "p", "p.adj")
 
 #sample info table
-ss = read.csv("data/sample_info_nasal.csv", header =TRUE, row.names = 1)
+ss <- read.csv("data/sample_info_nasal.csv", header =TRUE, row.names = 1)
 ss <- ss[, c(2,3)]
 colnames(ss) <- c("sample", "sample_group")
 ss$sample <- row.names(ss)
 str(ss)
 
 master <- merge(em, de, by.x=0, by.y=0)
-row.names(master) = master[,"Row.names"]
-names(master)[1] = "gene_name"
-master = na.omit(master)
-em = na.omit(em)
+row.names(master) <- master[,"Row.names"]
+names(master)[1] <- "gene_name"
+master <- na.omit(master)
+em <- na.omit(em)
 sorted_order <- order(master[,"p.adj"], decreasing=FALSE)
 master <- master[sorted_order,]
 master$mean_counts <- rowMeans(master[,ss$sample])
@@ -103,8 +103,8 @@ em_sig <- em[sig_genes,]
 em_scaled_sig <- em_scaled[sig_genes,]
 
 #### Volcano plot ####
-master_sig_up = subset(master, p.adj< 0.05 & log2fold >1)
-master_sig_down = subset(master, p.adj< 0.05 & log2fold < -1)
+master_sig_up <- subset(master, p.adj< 0.05 & log2fold >1)
+master_sig_down <- subset(master, p.adj< 0.05 & log2fold < -1)
 de_sig_up_top5 <- head(subset(de, p.adj < 0.05 & log2fold > 1), 5)
 de_sig_down_top5 <-head(subset(de, p.adj< 0.05 & log2fold < -1), 5)
 master_sig_up_top5 <- master[master$gene_name %in% rownames(de_sig_up_top5), ]
@@ -131,8 +131,8 @@ candidate_genes <- row.names(master10.s)
 em[candidate_genes, ]
 gene_data <- em[candidate_genes, ]
 gene_data <-  data.frame(t(gene_data))
-gene_data$sample_group = ss$sample_group
-gene_data.m = melt(gene_data, id.vars = "sample_group")
+gene_data$sample_group <- ss$sample_group
+gene_data.m <- melt(gene_data, id.vars = "sample_group")
 sum(gene_data.m$value == 0, na.rm = TRUE)
 which(gene_data.m$value == 0)
 table(gene_data.m$variable[gene_data.m$value == 0])
@@ -206,16 +206,16 @@ coldata_blood <- coldata_blood %>%
   )
 str(coldata_blood)
 
-counts_data_blood = as.matrix(counts_data_blood)
+counts_data_blood <- as.matrix(counts_data_blood)
 all(rownames(coldata_blood) %in% colnames(counts_data_blood))
 all(rownames(coldata_blood) == colnames(counts_data_blood))
 all(colnames(counts_data_blood) %in% rownames(coldata_blood))
 all(colnames(counts_data_blood) == rownames(coldata_blood))
 
 #sex correction
-batch = factor(coldata_blood$sex)
-sample_group = factor(coldata_blood$status)
-counts_corrected_blood = ComBat_seq(as.matrix(counts_data_blood), batch=batch, group=sample_group)
+batch <- factor(coldata_blood$sex)
+sample_group <- factor(coldata_blood$status)
+counts_corrected_blood <- ComBat_seq(as.matrix(counts_data_blood), batch=batch, group=sample_group)
 
 
 #### DESeq2  ####
@@ -237,26 +237,26 @@ table_counts_normalized_blood <- counts(dds, normalized=TRUE)
 #### Parse files ####
 
 # normalised gene expression table
-em = read.csv("data/em_blood.csv", header=TRUE, row.names = 1)
+em <- read.csv("data/em_blood.csv", header=TRUE, row.names = 1)
 
 # differential expression table
-de = read.csv("data/de_blood.csv", header=TRUE, row.names = 1)
+de <- read.csv("data/de_blood.csv", header=TRUE, row.names = 1)
 res_blood <- de_blood
 de_blood <- de_blood[,-c(1,3,4)]
 colnames(de_blood) <- c("log2fold", "p", "p.adj")
 
 #sample info table
-ss = read.csv("data/sample_info_blood.csv", header =TRUE, row.names = 1)
+ss <- read.csv("data/sample_info_blood.csv", header =TRUE, row.names = 1)
 ss <- ss[, c(2,3)]
 colnames(ss) <- c("sample", "sample_group")
 ss$sample <- row.names(ss)
 
 master <- merge(em, de_blood, by.x=0, by.y=0)
-row.names(master) = master[,"Row.names"]
-names(master)[1] = "gene_name"
+row.names(master) <- master[,"Row.names"]
+names(master)[1] <- "gene_name"
 nrow(master[master$p.adj == "NA",])
-master = na.omit(master)
-em = na.omit(em)
+master <- na.omit(master)
+em <- na.omit(em)
 sorted_order <- order(master[,"p.adj"], decreasing=FALSE)
 master <- master[sorted_order,]
 master$mean_counts <- rowMeans(master[,ss$sample])
@@ -276,8 +276,8 @@ em_sig <- em[sig_genes_blood,]
 em_scaled_sig <- em_scaled[sig_genes_blood,]
 
 #### Volcano plot ####
-master_sig_up = subset(master, p.adj< 0.05 & log2fold >1)
-master_sig_down = subset(master, p.adj< 0.05 & log2fold < -1)
+master_sig_up <- subset(master, p.adj< 0.05 & log2fold >1)
+master_sig_down <- subset(master, p.adj< 0.05 & log2fold < -1)
 de_sig_up_top5 <- head(subset(de_blood, p.adj < 0.05 & log2fold > 1), 5)
 de_sig_down_top5 <-head(subset(de_blood, p.adj< 0.05 & log2fold < -1), 5)
 master_sig_up_top5 <- master[master$gene_name %in% rownames(de_sig_up_top5), ]
@@ -305,8 +305,8 @@ candidate_genes <- row.names(master10.s)
 em[candidate_genes, ]
 gene_data <- em[candidate_genes, ]
 gene_data <-  data.frame(t(gene_data))
-gene_data$sample_group = ss$sample_group
-gene_data.m = melt(gene_data, id.vars = "sample_group")
+gene_data$sample_group <- ss$sample_group
+gene_data.m <- melt(gene_data, id.vars = "sample_group")
 sum(gene_data.m$value == 0, na.rm = TRUE)
 which(gene_data.m$value == 0)
 table(gene_data.m$variable[gene_data.m$value == 0])

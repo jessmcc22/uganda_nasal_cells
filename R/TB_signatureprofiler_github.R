@@ -15,11 +15,11 @@ library("HGNChelper")
 
 
 #update boxplot function
-signatureBoxplot=function (inputData, annotationData, signatureColNames, annotationColName,
-                           name = "Signatures", scale = FALSE, violinPlot = FALSE,
-                           includePoints = TRUE, notch = FALSE, rotateLabels = FALSE,
-                           nrow = NULL, ncol = NULL, fill_colors = NULL)
-{
+signatureBoxplot <- function (inputData, annotationData, signatureColNames,
+    annotationColName, name = "Signatures", scale = FALSE, violinPlot = FALSE,
+    includePoints = TRUE, notch = FALSE, rotateLabels = FALSE, nrow = NULL,
+    ncol = NULL, fill_colors = NULL) {
+
   if (methods::is(inputData, "SummarizedExperiment")) {
     if (any(duplicated(signatureColNames))) {
       stop("Duplicate signature column name is not supported.")

@@ -27,7 +27,7 @@ library(GenomicFeatures)
 #### NASAL DATA ####
 
 # read in your DEG dataset
-res = read.csv("data/de_nasal.csv", header=TRUE)
+res <- read.csv("data/de_nasal.csv", header=TRUE)
 head(res)
 colnames(res)[1] <- "symbol"
 head(res)
@@ -105,7 +105,7 @@ fgseaRes.p.sub <- fgseaRes.p[1:20,]
 #### BLOOD DATA ####
 
 # read in your DEG dataset
-res = read.csv("data/de_blood.csv", header=TRUE)
+res <- read.csv("data/de_blood.csv", header=TRUE)
 colnames(res)[1] <- "symbol"
 res <- as_tibble(res)
 head(res)
@@ -188,13 +188,13 @@ fgseaRes.p.sub <- fgseaRes.p[1:20,]
 #### NASAL DATA ####
 
 # normalised gene expression table
-em = read.csv("data/em_nasal.csv", header=TRUE, row.names = 1)
+em <- read.csv("data/em_nasal.csv", header=TRUE, row.names = 1)
 # differential expression table
-de = read.csv("data/de_nasal.csv", header=TRUE, row.names = 1)
+de <- read.csv("data/de_nasal.csv", header=TRUE, row.names = 1)
 de <- de[,-c(1,3,4)]
 colnames(de) <- c("log2fold", "p", "p.adj")
 #sample info table
-ss = read.csv("data/sample_info_nasal.csv", header =TRUE, row.names = 1)
+ss <- read.csv("data/sample_info_nasal.csv", header =TRUE, row.names = 1)
 ss <- ss[, c(2,3)]
 colnames(ss) <- c("sample", "sample_group")
 ss$sample <- row.names(ss)
@@ -203,9 +203,9 @@ ss$sample <- row.names(ss)
 #### Manipulate files ####
 master <- merge(em, de, by.x=0, by.y=0)
 row.names(master) = master[,"Row.names"]
-names(master)[1] = "gene_name"
-master = na.omit(master)
-em = na.omit(em)
+names(master)[1] <- "gene_name"
+master <- na.omit(master)
+em <- na.omit(em)
 sorted_order <- order(master[,"p.adj"], decreasing=FALSE)
 master <- master[sorted_order,]
 master$mean_counts <- rowMeans(master[,ss$sample])
@@ -225,25 +225,25 @@ em_scaled_sig <- em_scaled[sig_genes,]
 
 
 # Create a vector of gene names
-master_sig_up = subset(master, p.adj< 0.05 & log2fold >1)
-master_sig_down = subset(master, p.adj< 0.05 & log2fold < -1)
+master_sig_up <- subset(master, p.adj< 0.05 & log2fold >1)
+master_sig_down <- subset(master, p.adj< 0.05 & log2fold < -1)
 sig_genes_up <- row.names(master_sig_up)
 sig_genes_down <- row.names(master_sig_down)
 
 
-#### PATHWAY ANALYSIS = ####
+#### PATHWAY ANALYSIS ####
 # padjusted value as 0.1.
 
-do_pathway = function(organism_db, genes)
+do_pathway <- function(organism_db, genes)
 {
   # libraries
   library(clusterProfiler)
 
   # converts from ensembl Symbols to Entrez
-  sig_genes_entrez = bitr(genes, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = organism_db)
+  sig_genes_entrez <- bitr(genes, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = organism_db)
 
   # gets the enrichment
-  pathway_data = enrichGO(gene = sig_genes_entrez$ENTREZID,OrgDb = organism_db, readable = T,ont = "BP", pvalueCutoff = 0.1, qvalueCutoff = 0.10)
+  pathway_data <- enrichGO(gene = sig_genes_entrez$ENTREZID,OrgDb = organism_db, readable = T,ont = "BP", pvalueCutoff = 0.1, qvalueCutoff = 0.10)
 
   # add this check right here
   if (is.null(pathway_data) || nrow(as.data.frame(pathway_data)) == 0) {
@@ -252,10 +252,10 @@ do_pathway = function(organism_db, genes)
   }
 
   # bar and dotplot
-  ggp.barplot = barplot(pathway_data, showCategory=10)
-  ggp.dotplot = dotplot(pathway_data, showCategory=10, font.size = 10)
-  ggp.goplot =  goplot(pathway_data, showCategory = 10)
-  ggp.cnetplot = cnetplot(pathway_data,
+  ggp.barplot <- barplot(pathway_data, showCategory=10)
+  ggp.dotplot <- dotplot(pathway_data, showCategory=10, font.size = 10)
+  ggp.goplot <-  goplot(pathway_data, showCategory = 10)
+  ggp.cnetplot <- cnetplot(pathway_data,
                           categorySize= "geneNum",
                           color_category='firebrick',
                           color_gene='steelblue',  cex_label_gene = 0.7,
@@ -263,19 +263,19 @@ do_pathway = function(organism_db, genes)
 
 
   # extract the enrichment table from go enrich
-  gene_sets = pathway_data$geneID
-  description = pathway_data$Description
-  p.adj = pathway_data$p.adjust
-  ora_results = data.frame(cbind(gene_sets, description, p.adj))
+  gene_sets <- pathway_data$geneID
+  description <- pathway_data$Description
+  p.adj <- pathway_data$p.adjust
+  ora_results <- data.frame(cbind(gene_sets, description, p.adj))
 
   # Create the list to store the results
-  pathway_results = list("tables" = list(), "plots" = list())
-  pathway_results$tables$pathway_data = pathway_data
-  pathway_results$tables$ora_results = ora_results
-  pathway_results$plots$ggp.barplot = ggp.barplot
-  pathway_results$plots$ggp.dotplot = ggp.dotplot
-  pathway_results$plots$ggp.goplot = ggp.goplot
-  pathway_results$plots$ggp.cnetplot = ggp.cnetplot
+  pathway_results <- list("tables" = list(), "plots" = list())
+  pathway_results$tables$pathway_data <- pathway_data
+  pathway_results$tables$ora_results <- ora_results
+  pathway_results$plots$ggp.barplot <- ggp.barplot
+  pathway_results$plots$ggp.dotplot <- ggp.dotplot
+  pathway_results$plots$ggp.goplot <- ggp.goplot
+  pathway_results$plots$ggp.cnetplot <- ggp.cnetplot
 
   # return the results
   return(pathway_results)
@@ -305,13 +305,13 @@ nasal_down_dotplot <-pathway_results_down$plots$ggp.dotplot
 #### Load datasets ####
 
 # normalised gene expression table
-em = read.csv("data/em_blood.csv", header=TRUE, row.names = 1)
+em <- read.csv("data/em_blood.csv", header=TRUE, row.names = 1)
 # differential expression table
-de_blood = read.csv("data/de_blood.csv", header=TRUE, row.names = 1)
+de_blood <- read.csv("data/de_blood.csv", header=TRUE, row.names = 1)
 de_blood <- de_blood[,-c(1,3,4)]
 colnames(de_blood) <- c("log2fold", "p", "p.adj")
 #sample info table
-ss = read.csv("data/sample_info_blood.csv", header =TRUE, row.names = 1)
+ss <- read.csv("data/sample_info_blood.csv", header =TRUE, row.names = 1)
 ss <- ss[, c(2,3)]
 colnames(ss) <- c("sample", "sample_group")
 ss$sample <- row.names(ss)
@@ -319,11 +319,11 @@ ss$sample <- row.names(ss)
 
 #### Manipulate files ####
 master <- merge(em, de_blood, by.x=0, by.y=0)
-row.names(master) = master[,"Row.names"]
-names(master)[1] = "gene_name"
+row.names(master) <- master[,"Row.names"]
+names(master)[1] <- "gene_name"
 nrow(master[master$p.adj == "NA",])
-master = na.omit(master)
-em = na.omit(em)
+master <- na.omit(master)
+em <- na.omit(em)
 sorted_order <- order(master[,"p.adj"], decreasing=FALSE)
 master <- master[sorted_order,]
 master$mean_counts <- rowMeans(master[,ss$sample])
@@ -343,24 +343,24 @@ em_sig <- em[sig_genes_blood,]
 em_scaled_sig <- em_scaled[sig_genes_blood,]
 
 # Create a vector of gene names
-master_sig_up = subset(master, p.adj< 0.05 & log2fold >1)
-master_sig_down = subset(master, p.adj< 0.05 & log2fold < -1)
+master_sig_up <- subset(master, p.adj< 0.05 & log2fold >1)
+master_sig_down <- subset(master, p.adj< 0.05 & log2fold < -1)
 sig_genes_up <- row.names(master_sig_up)
 sig_genes_down <- row.names(master_sig_down)
 
 #### PATHWAY ANALYSIS -  ####
 
 #cut off is 0.05
-do_pathway = function(organism_db, genes)
+do_pathway <- function(organism_db, genes)
 {
   # libraries
   library(clusterProfiler)
 
   # converts from ensembl Symbols to Entrez
-  sig_genes_entrez = bitr(genes, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = organism_db)
+  sig_genes_entrez <- bitr(genes, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = organism_db)
 
   # gets the enrichment
-  pathway_data = enrichGO(gene = sig_genes_entrez$ENTREZID, OrgDb = organism_db, readable = T, ont = "BP", pvalueCutoff = 0.05, qvalueCutoff = 0.10)
+  pathway_data <- enrichGO(gene = sig_genes_entrez$ENTREZID, OrgDb = organism_db, readable = T, ont = "BP", pvalueCutoff = 0.05, qvalueCutoff = 0.10)
 
   # add this check right here
   if (is.null(pathway_data) || nrow(as.data.frame(pathway_data)) == 0) {
@@ -369,28 +369,28 @@ do_pathway = function(organism_db, genes)
   }
 
   # bar and dotplot
-  ggp.barplot = barplot(pathway_data, showCategory=10)
-  ggp.dotplot = dotplot(pathway_data, showCategory=10, font.size = 10)
-  ggp.goplot = goplot(pathway_data, showCategory = 10)
-  ggp.cnetplot = cnetplot(pathway_data,
+  ggp.barplot <- barplot(pathway_data, showCategory=10)
+  ggp.dotplot <- dotplot(pathway_data, showCategory=10, font.size = 10)
+  ggp.goplot <- goplot(pathway_data, showCategory = 10)
+  ggp.cnetplot <- cnetplot(pathway_data,
                           categorySize= "geneNum",
                           color_category='firebrick',
                           color_gene='steelblue',  cex_label_gene = 0.7)
 
   # extract the enrichment table from go enrich
-  gene_sets = pathway_data$geneID
-  description = pathway_data$Description
-  p.adj = pathway_data$p.adjust
-  ora_results = data.frame(cbind(gene_sets, description, p.adj))
+  gene_sets <- pathway_data$geneID
+  description <- pathway_data$Description
+  p.adj <- pathway_data$p.adjust
+  ora_results <- data.frame(cbind(gene_sets, description, p.adj))
 
   # Create the list to store the results
-  pathway_results = list("tables" = list(), "plots" = list())
-  pathway_results$tables$pathway_data = pathway_data
-  pathway_results$tables$ora_results = ora_results
-  pathway_results$plots$ggp.barplot = ggp.barplot
-  pathway_results$plots$ggp.dotplot = ggp.dotplot
-  pathway_results$plots$ggp.goplot = ggp.goplot
-  pathway_results$plots$ggp.cnetplot = ggp.cnetplot
+  pathway_results <- list("tables" = list(), "plots" = list())
+  pathway_results$tables$pathway_data <- pathway_data
+  pathway_results$tables$ora_results <- ora_results
+  pathway_results$plots$ggp.barplot <- ggp.barplot
+  pathway_results$plots$ggp.dotplot <- ggp.dotplot
+  pathway_results$plots$ggp.goplot <- ggp.goplot
+  pathway_results$plots$ggp.cnetplot <- ggp.cnetplot
 
   # return the results
   return(pathway_results)
@@ -537,12 +537,12 @@ cibersort_metadata <- cibersort_metadata %>%
 
 
 # summarise the data
-summary_of_cells = summary(cibersort_metadata)
+summary_of_cells <- summary(cibersort_metadata)
 summary_of_cells
-cells_control = cibersort_metadata[cibersort_metadata$status == "control",]
-cells_case = cibersort_metadata[cibersort_metadata$status == "case",]
-summary_of_cells_control = summary(cells_control)
-summary_of_cells_case = summary(cells_case)
+cells_control <- cibersort_metadata[cibersort_metadata$status == "control",]
+cells_case <- cibersort_metadata[cibersort_metadata$status == "case",]
+summary_of_cells_control <- summary(cells_control)
+summary_of_cells_case <- summary(cells_case)
 summary_of_cells_control
 summary_of_cells_case
 
@@ -610,35 +610,35 @@ shapiro.test(cells_case$Plasma_cells)
 
 # statistical tests
 
-wilcox_test_cd8 = wilcox.test(cells_control$T_cells_CD8, cells_case$T_cells_CD8)
+wilcox_test_cd8 <- wilcox.test(cells_control$T_cells_CD8, cells_case$T_cells_CD8)
 CD8_p <- wilcox_test_cd8$p.value
 
-wilcox_test_den = wilcox.test(cells_control$Dendritic_cells, cells_case$Dendritic_cells)
+wilcox_test_den <- wilcox.test(cells_control$Dendritic_cells, cells_case$Dendritic_cells)
 den_p <- wilcox_test_den$p.value
 
-wilcox_test_eos = wilcox.test(cells_control$Eosinophils, cells_case$Eosinophils)
+wilcox_test_eos <- wilcox.test(cells_control$Eosinophils, cells_case$Eosinophils)
 eos_p <- wilcox_test_eos$p.value
 
-wilcox_test_mast = wilcox.test(cells_control$Mast_cells, cells_case$Mast_cells)
+wilcox_test_mast <- wilcox.test(cells_control$Mast_cells, cells_case$Mast_cells)
 mast_p <- wilcox_test_mast$p.value
 
-wilcox_test_plasma = wilcox.test(cells_control$Plasma_cells, cells_case$Plasma_cells)
+wilcox_test_plasma <- wilcox.test(cells_control$Plasma_cells, cells_case$Plasma_cells)
 plasma_p<- wilcox_test_plasma$p.value
 
-ttest_B_cells = t.test(cells_control$B_cells, cells_case$B_cells)
+ttest_B_cells <- t.test(cells_control$B_cells, cells_case$B_cells)
 B_cells_p <- ttest_B_cells$p.value
 
-ttest_cd4 = t.test(cells_control$T_cells_CD4, cells_case$T_cells_CD4)
+ttest_cd4 <- t.test(cells_control$T_cells_CD4, cells_case$T_cells_CD4)
 CD4_p <- ttest_cd4$p.value
 
 
-ttest_mono = t.test(cells_control$Mono_Macrophages, cells_case$Mono_Macrophages)
+ttest_mono <- t.test(cells_control$Mono_Macrophages, cells_case$Mono_Macrophages)
 macro_p <- ttest_mono$p.value
 
-t_test_neutrophils = t.test(cells_control$Neutrophils, cells_case$Neutrophils)
+t_test_neutrophils <- t.test(cells_control$Neutrophils, cells_case$Neutrophils)
 Neutrophils_p <- t_test_neutrophils$p.value
 
-t_test_nk = t.test(cells_control$NK_cells, cells_case$NK_cells)
+t_test_nk <- t.test(cells_control$NK_cells, cells_case$NK_cells)
 nk_p <-t_test_nk$p.value
 
 
@@ -732,12 +732,12 @@ cibersort_metadata <- cibersort_metadata %>%
   dplyr::select (status, B_cells, T_cells_CD8, T_cells_CD4, T_cells_gamma_delta, Mono_Macrophages, Neutrophils, NK_cells, Dendritic_cells, Eosinophils, Mast_cells, Plasma_cells)
 
 # summarise the blood data
-summary_of_cells = summary(cibersort_metadata)
+summary_of_cells <- summary(cibersort_metadata)
 summary_of_cells
-cells_control = cibersort_metadata[cibersort_metadata$status == "control",]
-cells_case = cibersort_metadata[cibersort_metadata$status == "case",]
-summary_of_cells_control = summary(cells_control)
-summary_of_cells_case = summary(cells_case)
+cells_control <- cibersort_metadata[cibersort_metadata$status == "control",]
+cells_case <- cibersort_metadata[cibersort_metadata$status == "case",]
+summary_of_cells_control <- summary(cells_control)
+summary_of_cells_case <- summary(cells_case)
 summary_of_cells_control
 summary_of_cells_case
 
@@ -798,32 +798,32 @@ shapiro.test(cells_case$Dendritic_cells)
 shapiro.test(cells_case$Mast_cells)
 
 #statistical tests
-wilcox_test_cd4 = wilcox.test(cells_control$T_cells_CD4, cells_case$T_cells_CD4)
+wilcox_test_cd4 <- wilcox.test(cells_control$T_cells_CD4, cells_case$T_cells_CD4)
 CD4_p <- wilcox_test_cd4$p.value
 
-wilcox_test_macro = wilcox.test(cells_control$Mono_Macrophages, cells_case$Mono_Macrophages)
+wilcox_test_macro <- wilcox.test(cells_control$Mono_Macrophages, cells_case$Mono_Macrophages)
 macro_p <- wilcox_test_macro $p.value
 
-wilcox_test_den = wilcox.test(cells_control$Dendritic_cells, cells_case$Dendritic_cells)
+wilcox_test_den <- wilcox.test(cells_control$Dendritic_cells, cells_case$Dendritic_cells)
 den_p <- wilcox_test_den$p.value
 
-wilcox_test_mast = wilcox.test(cells_control$Mast_cells, cells_case$Mast_cells)
+wilcox_test_mast <- wilcox.test(cells_control$Mast_cells, cells_case$Mast_cells)
 mast_p <- wilcox_test_mast$p.value
 
 
-ttest_B_cells = t.test(cells_control$B_cells, cells_case$B_cells)
+ttest_B_cells <- t.test(cells_control$B_cells, cells_case$B_cells)
 B_cells_p <- ttest_B_cells$p.value
 
 
-ttest_cd8 = t.test(cells_control$T_cells_CD8, cells_case$T_cells_CD8)
+ttest_cd8 <- t.test(cells_control$T_cells_CD8, cells_case$T_cells_CD8)
 CD8_p <- ttest_cd8$p.value
 
 
-t_test_neutrophils = t.test(cells_control$Neutrophils, cells_case$Neutrophils)
+t_test_neutrophils <- t.test(cells_control$Neutrophils, cells_case$Neutrophils)
 Neutrophils_p <- t_test_neutrophils$p.value
 
 
-t_test_nk = t.test(cells_control$NK_cells, cells_case$NK_cells)
+t_test_nk <- t.test(cells_control$NK_cells, cells_case$NK_cells)
 nk_p <-t_test_nk$p.value
 
 all_p_values <- c(B_cells_p, Neutrophils_p, CD4_p, mast_p, macro_p, CD8_p, den_p, nk_p)
