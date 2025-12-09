@@ -1,6 +1,7 @@
 # ROC and models
 
-# This R script uses nasal and blood DEGs for training six machine learning models and calculates cross-validated AUC for predicting TB
+# This R script uses nasal and blood DEGs for training six machine learning
+# models and calculates cross-validated AUC for predicting TB
 # Compares nasal_44 and blood_238 missed TB cases for best performing model
 # Derives nasal reduced gene signature based on variable importance
 
@@ -16,35 +17,35 @@ library(DESeq2)
 library(sva)
 library(patchwork)
 library(cowplot)
-
+library(ranger)
+library(glmnet)
+library(kernlab)
+libary(pls)
 
 
 #### Theme   ####
 theme_SL2 <- function () {
   theme_bw() %+replace%
-    theme(
-      panel.grid = element_blank(),
+    theme(panel.grid = element_blank(),
       panel.background = element_blank(),
       panel.border = element_rect(colour = "black", fill=NA, size=1),
       plot.background = element_blank(),
       legend.background = element_rect(fill="transparent", colour=NA),
       legend.key = element_rect(fill="transparent", colour=NA),
       legend.text=element_text(size=12, family="Arial", face="bold"),
-      legend.title=element_blank(),
-    )
+      legend.title=element_blank())
 }
 
 
 #### NASAL ####
 
-#### Modelliing dataframe ####
+#### Modelling dataframe ####
 counts_data <- read.csv("data/nasalcounts.csv", header=TRUE, row.names = 1)
 coldata <- read.csv("data/nasalcoldata.csv", header=TRUE, row.names = 1)
 coldata <- coldata %>%
   dplyr::mutate(
     status = factor(status, levels = c("control", "case")),
-    sex = factor(sex, levels = c("male", "female"))
-  )
+    sex = factor(sex, levels = c("male", "female")))
 str(coldata)
 
 # Convert to matrix
@@ -56,7 +57,9 @@ all(colnames(counts_data) == rownames(coldata))
 
 batch <- factor(coldata$sex)
 sample_group <- factor(coldata$status)
-counts_corrected <- ComBat_seq(as.matrix(counts_data), batch=batch, group=sample_group)
+counts_corrected <- ComBat_seq(as.matrix(counts_data),
+    batch=batch,
+    group=sample_group)
 
 
 # DESeq2
@@ -95,25 +98,26 @@ feats_nasal<- feats
 
 #### RANGER ####
 set.seed(42)
-fit_control <- trainControl(method="repeatedcv",
-                            number=10,
-                            repeats=10, #could if needed switch to 10:10
-                            summaryFunction=twoClassSummary,
+fit_control <- trainControl(method = "repeatedcv",
+                            number = 10,
+                            repeats = 10, #could if needed switch to 10:10
+                            summaryFunction = twoClassSummary,
                             savePredictions = TRUE,
                             classProbs = TRUE,
                             verboseIter = TRUE,
                             search = 'random')
 
 set.seed(42)
-r_fit <- caret::train(status~., data=feats,
-                      method='ranger',
-                      metric='ROC',
-                      tuneLength=15,
-                      trControl= fit_control,
+r_fit <- caret::train(status~.,
+                      data = feats,
+                      method = 'ranger',
+                      metric = 'ROC',
+                      tuneLength = 15,
+                      trControl = fit_control,
                       importance = 'permutation')
 
 
-fm_model_r <- evalm(r_fit, gnames='random forest', plots="r", fsize=11)
+fm_model_r <- evalm(r_fit, gnames = 'random forest', plots = "r", fsize = 11)
 ggr <- fm_model_r$roc + theme_SL2() + theme(legend.position = "bottom")
 dev.off()
 fm_model_r
@@ -123,45 +127,45 @@ r_fit_nasal44 <- r_fit
 #### ELASTIC NET ####
 set.seed(42)
 glmnet_fit <- train(
-  status ~ ., data = feats,
+  status ~ .,
+  data = feats,
   method = "glmnet",
   metric = "ROC",
   trControl = fit_control,
-  preProcess = c("center","scale")
-)
+  preProcess = c("center","scale"))
 
 
-fm_model_e <- evalm(glmnet_fit, gnames='elastic net', plots="r", fsize=11)
-gge = fm_model_e$roc + theme_SL2() + theme(legend.position = "bottom")
+fm_model_e <- evalm(glmnet_fit, gnames = 'elastic net', plots = "r", fsize = 11)
+gge <- fm_model_e$roc + theme_SL2() + theme(legend.position = "bottom")
 dev.off()
 fm_model_e
 
 #### SVM radial ####
 
 set.seed(42)
-svmr_fit <- train(
-  status ~ ., data = feats,
+svmr_fit <- train(status ~ .,
+  data = feats,
   method = "svmRadial",
   metric = "ROC",
   trControl = fit_control,
-  tuneLength=15,
+  tuneLength = 15,
   preProcess = c("center","scale")
 )
 
 
-fm_model_svmr <- evalm(svmr_fit, gnames='SVM (radial)', plots="r", fsize=11)
+fm_model_svmr <- evalm(svmr_fit, gnames = 'SVM (radial)', plots = "r", fsize = 11)
 ggsvmr <- fm_model_svmr$roc + theme_SL2() + theme(legend.position = "bottom")
 dev.off()
 fm_model_svmr
 
 #### SVM linear ####
 set.seed(42)
-svm_fit <- train(
-  status ~ ., data = feats,
+svm_fit <- train(status ~ .,
+  data = feats,
   method = "svmLinear",
   metric = "ROC",
   trControl = fit_control,
-  tuneLength=15,
+  tuneLength = 15,
   preProcess = c("center","scale")
 )
 
@@ -174,8 +178,8 @@ fm_model_svm
 #### KNN ####
 
 set.seed(42)
-knn_fit <- train(
-  status ~ ., data = feats,
+knn_fit <- train(status ~ .,
+  data = feats,
   method = "knn",
   metric = "ROC",
   trControl = fit_control,
@@ -190,8 +194,8 @@ fm_model_knn
 
 #### PLS####
 set.seed(42)
-pls_fit <- train(
-  status ~ ., data = feats,
+pls_fit <- train(status ~ .,
+  data = feats,
   method   = "pls",                 # PLS-DA via caret
   metric   = "ROC",
   trControl = fit_control,          # your 10x10 repeated CV
@@ -254,8 +258,7 @@ nasal_svml
 nasal_glm
 nasal_pls
 
-figure_importance_10 <- cowplot::plot_grid(
-  nasal_rf, nasal_knn,
+figure_importance_10 <- cowplot::plot_grid(nasal_rf, nasal_knn,
   nasal_svmr, nasal_svml,
   nasal_glm, nasal_pls,
   ncol = 2, labels = LETTERS[1:6]
@@ -283,22 +286,26 @@ importance_rf <- varImp(r_fit)
 
 
 importance_rf_df <- as.data.frame(importance_rf$importance)
-sorted_importance_rf_df <- importance_rf_df[order(importance_rf_df$Overall, decreasing = TRUE), , drop = FALSE]
+sorted_importance_rf_df <- importance_rf_df[order(importance_rf_df$Overall,
+    decreasing = TRUE), , drop = FALSE]
 
 
 importance_knn_df <- as.data.frame(importance_knn$importance)
-sorted_importance_knn_df <- importance_knn_df[order(importance_knn_df$control, decreasing = TRUE), , drop = FALSE]
+sorted_importance_knn_df <- importance_knn_df[order(importance_knn_df$control,
+    decreasing = TRUE), , drop = FALSE]
 
 
 importance_pls_df <- as.data.frame(importance_pls$importance)
-sorted_importance_pls_df <- importance_pls_df[order(importance_pls_df$Overall, decreasing = TRUE), , drop = FALSE]
+sorted_importance_pls_df <- importance_pls_df[order(importance_pls_df$Overall,
+    decreasing = TRUE), , drop = FALSE]
 
 
 importance_glm_df <- as.data.frame(importance_glm$importance)
-sorted_importance_glm_df <- importance_glm_df[order(importance_glm_df$Overall, decreasing = TRUE), , drop = FALSE]
+sorted_importance_glm_df <- importance_glm_df[order(importance_glm_df$Overall,
+    decreasing = TRUE), , drop = FALSE]
 
 
-#which overlap between machine learning methods ####
+# which overlap between machine learning methods ####
 # top 10 important
 top_predictive_genes_knn <- rownames(sorted_importance_knn_df)[1:10]
 top_predictive_genes_rf <- rownames(sorted_importance_rf_df)[1:10]
@@ -355,11 +362,12 @@ fit_control <- trainControl(method="repeatedcv",
                             search = 'random')
 
 set.seed(42)
-r_fit <- caret::train(status~., data=feats,
-                      method='ranger',
-                      metric='ROC',
-                      tuneLength=15,
-                      trControl= fit_control,
+r_fit <- caret::train(status~.,
+                      data = feats,
+                      method = 'ranger',
+                      metric = 'ROC',
+                      tuneLength = 15,
+                      trControl = fit_control,
                       importance = 'permutation')
 
 fm_model_r <- evalm(r_fit, gnames='random forest', plots="r", fsize=11)
@@ -372,7 +380,8 @@ fm_model_r
 
 set.seed(42)
 glmnet_fit <- train(
-  status ~ ., data = feats,
+  status ~ .,
+  data = feats,
   method = "glmnet",
   metric = "ROC",
   trControl = fit_control,
@@ -388,11 +397,12 @@ fm_model_e
 
 set.seed(42)
 svmr_fit <- train(
-  status ~ ., data = feats,
+  status ~ .,
+  data = feats,
   method = "svmRadial",
   metric = "ROC",
   trControl = fit_control,
-  tuneLength=15,
+  tuneLength = 15,
   preProcess = c("center","scale")
 )
 
@@ -496,7 +506,9 @@ all(colnames(counts_data_blood) == rownames(coldata_blood))
 
 batch <- factor(coldata_blood$sex)
 sample_group <- factor(coldata_blood$status)
-counts_corrected_blood <- ComBat_seq(as.matrix(counts_data_blood), batch=batch, group=sample_group)
+counts_corrected_blood <- ComBat_seq(as.matrix(counts_data_blood),
+    batch=batch,
+    group=sample_group)
 dds <- DESeqDataSetFromMatrix(countData = counts_corrected_blood,
                               colData = coldata_blood,
                               design = ~ status)
@@ -665,7 +677,7 @@ all_plots <- wrap_plots(all_plots, ncol = 3, nrow = 2)
 
 
 #### combined signatures value ####
-#nasal_44
+# nasal_44
 r_fit_nasal44
 fm_model_r <- evalm(r_fit_nasal44, gnames='random forest', plots="r", fsize=11)
 fm_model_r
@@ -683,12 +695,13 @@ prob_col <- "case"
 # extract caret CV predictions with best hyperparameters
 preds <- r_fit_nasal44$pred
 best <- r_fit_nasal44$bestTune
-keep_idx <- Reduce(`&`, lapply(names(best), function(col) preds[[col]] == best[[col]]))
+keep_idx <- Reduce(`&`, lapply(names(best),
+    function(col) preds[[col]] == best[[col]]))
 preds <- preds[keep_idx, ]
 sample_names <- rownames(feats_nasal)
 preds$sample_id <- sample_names[preds$rowIndex]
 
-#CV probability per sample and get cm
+# CV probability per sample and get cm
 agg <- preds %>%
   group_by(sample_id) %>%
   summarise(
@@ -738,12 +751,13 @@ prob_col <- "case"
 # extract caret CV predictions with best hyperparameters
 preds <- r_fit_blood238$pred
 best <- r_fit_blood238$bestTune
-keep_idx <- Reduce(`&`, lapply(names(best), function(col) preds[[col]] == best[[col]]))
+keep_idx <- Reduce(`&`, lapply(names(best),
+    function(col) preds[[col]] == best[[col]]))
 preds <- preds[keep_idx, ]
 sample_names <- rownames(feats_blood)
 preds$sample_id <- sample_names[preds$rowIndex]
 
-#CV probability per sample and get cm
+# CV probability per sample and get cm
 agg <- preds %>%
   group_by(sample_id) %>%
   summarise(
@@ -754,7 +768,7 @@ agg <- preds %>%
 agg$pred_cv_youden <- ifelse(agg$mean_prob >= thr, "case", "control")
 table(agg$pred_cv_youden, agg$true_status)
 
-#which case/control
+# which case/control
 samples_pred_case_CV <- agg$sample_id[agg$pred_cv_youden == "case"]
 samples_pred_control_CV <- agg$sample_id[agg$pred_cv_youden == "control"]
 samples_pred_case_CV
@@ -773,7 +787,7 @@ control_rows <- coldata_blood[
 case_rows_blood238 <- case_rows
 control_rows_blood238 <- control_rows
 
-# combare nose and blood missed cases
+# compare nose and blood missed cases
 case_rows_nasal44
 control_rows_nasal44
 case_rows_blood238
